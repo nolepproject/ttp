@@ -1,0 +1,60 @@
+const getStickerMaker = require('./lib/functions')
+
+//Taro di functions
+const getStickerMaker = (link) => new Promise((resolve, reject) => {
+    fetch('https://api.areltiyan.com/sticker_maker?text='+encodeURIComponent(link), {
+        method: 'GET',
+    })
+    .then(async res => {
+        const text = await res.json()
+
+        resolve(text)
+        
+     })
+    .catch(err => reject(err))
+});
+
+exports.getStickerMaker = getStickerMaker
+
+//taro di msghndlr
+case '!ttp':   
+           try
+                {
+                    const string = body.toLowerCase().includes('!ttp') ? body.slice(5) : body.slice(5)
+                    if(args)
+                    {
+                        if(quotedMsgObj == null)
+                        {
+                            const gasMake = await getStickerMaker(string)
+                            if(gasMake.status == true)
+                            {
+                                try{
+                                    await client.sendImageAsSticker(from, gasMake.base64)
+                                }catch(err) {
+                                    await client.reply(from, 'Gagal membuat.', id)
+                                } 
+                            }else{
+                                await client.reply(from, gasMake.reason, id)
+                            }
+                        }else if(quotedMsgObj != null){
+                            const gasMake = await getStickerMaker(quotedMsgObj.body)
+                            if(gasMake.status == true)
+                            {
+                                try{
+                                    await client.sendImageAsSticker(from, gasMake.base64)
+                                }catch(err) {
+                                    await client.reply(from, 'Gagal membuat.', id)
+                                } 
+                            }else{
+                                await client.reply(from, gasMake.reason, id)
+                            }
+                        }
+                       
+                    }else{
+                        await client.reply(from, 'Tidak boleh kosong.', id)
+                    }
+                }catch(error)
+                {
+                    console.log(error)
+                }
+            break;
